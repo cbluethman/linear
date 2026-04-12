@@ -83,6 +83,53 @@ public class Mat2Tests
         Mat2.ReflectionY.Determinant.Should().BeApproximately(-1, Tolerance);
     }
 
+    [Fact]
+    public void Determinant_SmallIntegerMatrices_MatchesFormula()
+    {
+        // QuizService generates matrices with entries in [-3, 3].
+        // Verify determinant formula ad-bc across the full range.
+        var rng = new Random(42);
+        for (int i = 0; i < 50; i++)
+        {
+            double a = rng.Next(-3, 4), b = rng.Next(-3, 4);
+            double c = rng.Next(-3, 4), d = rng.Next(-3, 4);
+            var mat = new Mat2(a, b, c, d);
+            mat.Determinant.Should().BeApproximately(a * d - b * c, Tolerance);
+        }
+    }
+
+    // --- Record equality (Mat2 used as quiz CorrectAnswer) ---
+
+    [Fact]
+    public void RecordEquality_SameValues_AreEqual()
+    {
+        var a = new Mat2(1, 2, 3, 4);
+        var b = new Mat2(1, 2, 3, 4);
+        a.Should().Be(b);
+        (a == b).Should().BeTrue();
+        a.GetHashCode().Should().Be(b.GetHashCode());
+    }
+
+    [Fact]
+    public void RecordEquality_DifferentValues_AreNotEqual()
+    {
+        var a = new Mat2(1, 2, 3, 4);
+        var b = new Mat2(1, 2, 3, 5);
+        a.Should().NotBe(b);
+        (a != b).Should().BeTrue();
+    }
+
+    [Fact]
+    public void RecordEquality_IntegerEntriesRoundTrip()
+    {
+        // Simulates what QuizService does: create from int, cast via object,
+        // then compare. Record struct equality must hold after boxing/unboxing.
+        object answer = new Mat2(2, -1, 3, 0);
+        var expected = new Mat2(2, -1, 3, 0);
+        answer.Should().BeOfType<Mat2>();
+        ((Mat2)answer).Should().Be(expected);
+    }
+
     // --- Trace ---
 
     [Fact]
