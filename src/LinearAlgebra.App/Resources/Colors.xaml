@@ -1,0 +1,22 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Dark theme colors -->
+    <Color x:Key="DarkBg">#1E1E28</Color>
+    <Color x:Key="DarkPanel">#252530</Color>
+    <Color x:Key="DarkBorder">#3C3C50</Color>
+    <Color x:Key="DarkText">#E6E6F0</Color>
+    <Color x:Key="DarkTextSecondary">#A0A0B4</Color>
+    <Color x:Key="AccentBlue">#50A0FF</Color>
+    <Color x:Key="AccentGreen">#64DC64</Color>
+    <Color x:Key="AccentRed">#FF6464</Color>
+    <Color x:Key="AccentGold">#FFC832</Color>
+
+    <SolidColorBrush x:Key="BgBrush" Color="{StaticResource DarkBg}" />
+    <SolidColorBrush x:Key="PanelBrush" Color="{StaticResource DarkPanel}" />
+    <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource DarkBorder}" />
+    <SolidColorBrush x:Key="TextBrush" Color="{StaticResource DarkText}" />
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource DarkTextSecondary}" />
+    <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentBlue}" />
+
+</ResourceDictionary>

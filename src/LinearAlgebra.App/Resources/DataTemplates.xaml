@@ -1,0 +1,34 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:lessons="clr-namespace:LinearAlgebra.App.ViewModels.Lessons"
+                    xmlns:views="clr-namespace:LinearAlgebra.App.Views.Lessons">
+
+    <DataTemplate DataType="{x:Type lessons:VectorBasicsViewModel}">
+        <views:VectorBasicsView />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type lessons:VectorOperationsViewModel}">
+        <views:VectorOperationsView />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type lessons:MatrixTransformViewModel}">
+        <views:MatrixTransformView />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type lessons:LinearCombinationViewModel}">
+        <views:LinearCombinationView />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type lessons:DeterminantViewModel}">
+        <views:DeterminantView />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type lessons:EigenViewModel}">
+        <views:EigenView />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type lessons:SystemsOfEquationsViewModel}">
+        <views:SystemsOfEquationsView />
+    </DataTemplate>
+
+</ResourceDictionary>

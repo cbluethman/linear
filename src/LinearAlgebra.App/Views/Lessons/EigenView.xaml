@@ -1,0 +1,51 @@
+<UserControl x:Class="LinearAlgebra.App.Views.Lessons.EigenView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel>
+        <Border DockPanel.Dock="Right" Width="250" Background="{StaticResource PanelBrush}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1,0,0,0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="12">
+                    <TextBlock Text="Matrix [2x2]" Style="{StaticResource SectionHeader}" />
+                    <Grid Margin="0,8">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding M11, UpdateSourceTrigger=LostFocus}" Style="{StaticResource MatrixTextBox}" />
+                        <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding M12, UpdateSourceTrigger=LostFocus}" Style="{StaticResource MatrixTextBox}" />
+                        <TextBox Grid.Row="1" Grid.Column="0" Text="{Binding M21, UpdateSourceTrigger=LostFocus}" Style="{StaticResource MatrixTextBox}" Margin="0,4,0,0" />
+                        <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding M22, UpdateSourceTrigger=LostFocus}" Style="{StaticResource MatrixTextBox}" Margin="0,4,0,0" />
+                    </Grid>
+
+                    <Separator Background="{StaticResource BorderBrush}" Margin="0,12" />
+
+                    <TextBlock Text="Controls" Style="{StaticResource SectionHeader}" />
+                    <CheckBox IsChecked="{Binding ShowEigenvectors}" Foreground="{StaticResource TextBrush}"
+                              Content="Show Eigenvectors" Margin="0,4" />
+                    <Button Content="Find Eigenvectors" Style="{StaticResource PresetButton}"
+                            Command="{Binding FindEigenvectorsCommand}" Margin="0,8" />
+
+                    <Separator Background="{StaticResource BorderBrush}" Margin="0,12" />
+
+                    <TextBlock Text="Presets" Style="{StaticResource SectionHeader}" />
+                    <WrapPanel>
+                        <Button Content="Symmetric" Style="{StaticResource PresetButton}" Click="OnSymmetric" />
+                        <Button Content="Rotation" Style="{StaticResource PresetButton}" Click="OnRotation" />
+                        <Button Content="Diagonal" Style="{StaticResource PresetButton}" Click="OnDiagonal" />
+                    </WrapPanel>
+
+                    <TextBlock Text="Gold vectors = eigenvectors (only scale, don't rotate)"
+                               Foreground="{StaticResource TextSecondaryBrush}" FontSize="11"
+                               TextWrapping="Wrap" Margin="0,16,0,0" FontStyle="Italic" />
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+        <Border />
+    </DockPanel>
+</UserControl>

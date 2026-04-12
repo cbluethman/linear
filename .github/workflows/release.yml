@@ -1,0 +1,79 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Get version from tag
+      id: version
+      shell: bash
+      run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+
+    - name: Restore
+      run: dotnet restore
+
+    - name: Build Release
+      run: dotnet build --configuration Release --no-restore
+
+    # Portable self-contained exe
+    - name: Publish portable
+      run: |
+        dotnet publish src/LinearAlgebra.App/LinearAlgebra.App.csproj `
+          --configuration Release `
+          --runtime win-x64 `
+          --self-contained true `
+          -p:PublishSingleFile=true `
+          -p:IncludeNativeLibrariesForSelfExtract=true `
+          -p:Version=${{ steps.version.outputs.VERSION }} `
+          --output ./publish/portable
+
+    # MSIX package
+    - name: Publish MSIX
+      run: |
+        dotnet publish src/LinearAlgebra.App/LinearAlgebra.App.csproj `
+          --configuration Release `
+          --runtime win-x64 `
+          --self-contained true `
+          -p:Version=${{ steps.version.outputs.VERSION }} `
+          -p:GenerateAppxPackageOnBuild=true `
+          -p:AppxPackageSigningEnabled=false `
+          --output ./publish/msix
+      continue-on-error: true
+
+    - name: Create portable zip
+      shell: pwsh
+      run: |
+        Compress-Archive -Path ./publish/portable/* -DestinationPath ./publish/LinearAlgebra-${{ steps.version.outputs.VERSION }}-win-x64.zip
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-artifacts
+        path: |
+          ./publish/LinearAlgebra-*.zip
+          ./publish/msix/**/*.msix
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        name: Linear Algebra v${{ steps.version.outputs.VERSION }}
+        generate_release_notes: true
+        files: |
+          ./publish/LinearAlgebra-*.zip
+          ./publish/msix/**/*.msix

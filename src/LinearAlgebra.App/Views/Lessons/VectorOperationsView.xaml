@@ -1,0 +1,42 @@
+<UserControl x:Class="LinearAlgebra.App.Views.Lessons.VectorOperationsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel>
+        <Border DockPanel.Dock="Right" Width="250" Background="{StaticResource PanelBrush}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1,0,0,0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="12">
+                    <TextBlock Text="Operation" Style="{StaticResource SectionHeader}" />
+                    <StackPanel Margin="0,4">
+                        <RadioButton Content="Addition (A + B)" Foreground="{StaticResource TextBrush}"
+                                     IsChecked="{Binding OperationIndex, Converter={StaticResource IndexConverter}, ConverterParameter=0}" Margin="0,2" />
+                        <RadioButton Content="Subtraction (A - B)" Foreground="{StaticResource TextBrush}"
+                                     IsChecked="{Binding OperationIndex, Converter={StaticResource IndexConverter}, ConverterParameter=1}" Margin="0,2" />
+                        <RadioButton Content="Scalar Mult (s * A)" Foreground="{StaticResource TextBrush}"
+                                     IsChecked="{Binding OperationIndex, Converter={StaticResource IndexConverter}, ConverterParameter=2}" Margin="0,2" />
+                    </StackPanel>
+
+                    <Separator Background="{StaticResource BorderBrush}" Margin="0,8" />
+
+                    <TextBlock Text="Vector A" Style="{StaticResource SectionHeader}" Foreground="#50A0FF" />
+                    <TextBlock Text="X" Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" />
+                    <Slider Value="{Binding AX}" Minimum="-8" Maximum="8" TickFrequency="0.5" IsSnapToTickEnabled="True" />
+                    <TextBlock Text="Y" Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" />
+                    <Slider Value="{Binding AY}" Minimum="-8" Maximum="8" TickFrequency="0.5" IsSnapToTickEnabled="True" />
+
+                    <TextBlock Text="Vector B" Style="{StaticResource SectionHeader}" Foreground="#64DC64" />
+                    <TextBlock Text="X" Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" />
+                    <Slider Value="{Binding BX}" Minimum="-8" Maximum="8" TickFrequency="0.5" IsSnapToTickEnabled="True" />
+                    <TextBlock Text="Y" Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" />
+                    <Slider Value="{Binding BY}" Minimum="-8" Maximum="8" TickFrequency="0.5" IsSnapToTickEnabled="True" />
+
+                    <TextBlock Text="Scalar" Style="{StaticResource SectionHeader}" />
+                    <Slider Value="{Binding Scalar}" Minimum="-3" Maximum="3" TickFrequency="0.25" IsSnapToTickEnabled="True" />
+                    <TextBlock Text="{Binding Scalar, StringFormat='{}{0:F2}'}"
+                               Foreground="{StaticResource TextBrush}" FontFamily="Consolas" HorizontalAlignment="Center" />
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+        <Border />
+    </DockPanel>
+</UserControl>

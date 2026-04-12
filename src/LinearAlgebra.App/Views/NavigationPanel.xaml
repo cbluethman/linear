@@ -1,0 +1,60 @@
+<UserControl x:Class="LinearAlgebra.App.Views.NavigationPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:LinearAlgebra.App.ViewModels">
+    <UserControl.Resources>
+        <Style TargetType="TextBlock" x:Key="CategoryHeader">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+            <Setter Property="Margin" Value="12,16,12,6" />
+            <Setter Property="Opacity" Value="0.7" />
+        </Style>
+    </UserControl.Resources>
+
+    <Border Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,1,0">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock Text="Linear Algebra" FontSize="16" FontWeight="Bold"
+                           Foreground="{StaticResource AccentBrush}" Margin="12,16,12,4" />
+                <TextBlock Text="Visual Learning" FontSize="11"
+                           Foreground="{StaticResource TextSecondaryBrush}" Margin="12,0,12,12" />
+
+                <Separator Background="{StaticResource BorderBrush}" Margin="12,0" />
+
+                <TextBlock Text="VECTORS" Style="{StaticResource CategoryHeader}" />
+                <ItemsControl ItemsSource="{Binding VectorLessons}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Style="{StaticResource LessonButton}" Content="{Binding Title}"
+                                    Command="{Binding DataContext.SelectLessonCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <TextBlock Text="MATRICES" Style="{StaticResource CategoryHeader}" />
+                <ItemsControl ItemsSource="{Binding MatrixLessons}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Style="{StaticResource LessonButton}" Content="{Binding Title}"
+                                    Command="{Binding DataContext.SelectLessonCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <TextBlock Text="ADVANCED" Style="{StaticResource CategoryHeader}" />
+                <ItemsControl ItemsSource="{Binding AdvancedLessons}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Style="{StaticResource LessonButton}" Content="{Binding Title}"
+                                    Command="{Binding DataContext.SelectLessonCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+    </Border>
+</UserControl>

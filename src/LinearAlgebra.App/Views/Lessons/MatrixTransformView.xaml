@@ -1,0 +1,50 @@
+<UserControl x:Class="LinearAlgebra.App.Views.Lessons.MatrixTransformView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel>
+        <Border DockPanel.Dock="Right" Width="250" Background="{StaticResource PanelBrush}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1,0,0,0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="12">
+                    <TextBlock Text="Matrix [2x2]" Style="{StaticResource SectionHeader}" />
+                    <Grid Margin="0,8">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding M11, UpdateSourceTrigger=LostFocus}" Style="{StaticResource MatrixTextBox}" />
+                        <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding M12, UpdateSourceTrigger=LostFocus}" Style="{StaticResource MatrixTextBox}" />
+                        <TextBox Grid.Row="1" Grid.Column="0" Text="{Binding M21, UpdateSourceTrigger=LostFocus}" Style="{StaticResource MatrixTextBox}" Margin="0,4,0,0" />
+                        <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding M22, UpdateSourceTrigger=LostFocus}" Style="{StaticResource MatrixTextBox}" Margin="0,4,0,0" />
+                    </Grid>
+
+                    <Separator Background="{StaticResource BorderBrush}" Margin="0,8" />
+
+                    <TextBlock Text="Presets" Style="{StaticResource SectionHeader}" />
+                    <WrapPanel>
+                        <Button Content="Identity" Style="{StaticResource PresetButton}" Command="{Binding ApplyIdentityCommand}" />
+                        <Button Content="Reflect X" Style="{StaticResource PresetButton}" Command="{Binding ApplyReflectXCommand}" />
+                        <Button Content="Reflect Y" Style="{StaticResource PresetButton}" Command="{Binding ApplyReflectYCommand}" />
+                        <Button Content="Shear X" Style="{StaticResource PresetButton}" Command="{Binding ApplyShearXCommand}" CommandParameter="1" />
+                        <Button Content="Shear Y" Style="{StaticResource PresetButton}" Command="{Binding ApplyShearYCommand}" CommandParameter="1" />
+                    </WrapPanel>
+
+                    <Separator Background="{StaticResource BorderBrush}" Margin="0,8" />
+
+                    <TextBlock Text="Rotation" Style="{StaticResource SectionHeader}" />
+                    <Slider Value="{Binding RotationAngle}" Minimum="0" Maximum="360"
+                            TickFrequency="15" IsSnapToTickEnabled="True" />
+                    <TextBlock Text="{Binding RotationAngle, StringFormat='{}{0:F0} degrees'}"
+                               Foreground="{StaticResource TextBrush}" FontFamily="Consolas" HorizontalAlignment="Center" />
+                    <Button Content="Apply Rotation" Style="{StaticResource PresetButton}" Command="{Binding ApplyRotationCommand}" Margin="0,4" />
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+        <Border />
+    </DockPanel>
+</UserControl>
