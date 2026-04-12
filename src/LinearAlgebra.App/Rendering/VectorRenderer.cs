@@ -85,8 +85,8 @@ public class VectorRenderer
         var xComp = new Vec2(v.X, 0);
         var yComp = new Vec2(0, v.Y);
 
-        DrawVector(canvas, grid, Vec2.Zero, xComp, color with { Alpha = 100 }, null, 2f, dashed: true);
-        DrawVector(canvas, grid, xComp, v, color with { Alpha = 100 }, null, 2f, dashed: true);
+        DrawVector(canvas, grid, Vec2.Zero, xComp, color.WithAlpha(100), null, 2f, dashed: true);
+        DrawVector(canvas, grid, xComp, v, color.WithAlpha(100), null, 2f, dashed: true);
     }
 
     public bool HitTestArrowHead(GridRenderer grid, Vec2 vectorTip, float screenX, float screenY, float threshold = 15f)

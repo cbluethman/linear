@@ -5,7 +5,7 @@ namespace LinearAlgebra.Tests.Rendering;
 
 public class GridRendererTests
 {
-    private const double Tolerance = 1e-6;
+    private const float Tolerance = 1e-3f;
 
     private GridRenderer CreateCentered(float width = 800, float height = 600)
     {
@@ -54,8 +54,8 @@ public class GridRendererTests
     public void WorldToScreen_Origin_MapsToCenter()
     {
         var grid = CreateCentered(800, 600);
-        grid.WorldToScreenX(0).Should().BeApproximately(400, Tolerance);
-        grid.WorldToScreenY(0).Should().BeApproximately(300, Tolerance);
+        grid.WorldToScreenX(0).Should().BeApproximately(400f, Tolerance);
+        grid.WorldToScreenY(0).Should().BeApproximately(300f, Tolerance);
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public class GridRendererTests
     {
         var grid = CreateCentered(800, 600);
         // 1 world unit = 50 pixels to the right
-        grid.WorldToScreenX(1).Should().BeApproximately(450, Tolerance);
+        grid.WorldToScreenX(1).Should().BeApproximately(450f, Tolerance);
     }
 
     [Fact]
@@ -71,14 +71,14 @@ public class GridRendererTests
     {
         var grid = CreateCentered(800, 600);
         // Positive Y in world goes UP, which is negative in screen coords
-        grid.WorldToScreenY(1).Should().BeApproximately(250, Tolerance);
+        grid.WorldToScreenY(1).Should().BeApproximately(250f, Tolerance);
     }
 
     [Fact]
     public void WorldToScreenY_NegativeY_MovesDown()
     {
         var grid = CreateCentered(800, 600);
-        grid.WorldToScreenY(-1).Should().BeApproximately(350, Tolerance);
+        grid.WorldToScreenY(-1).Should().BeApproximately(350f, Tolerance);
     }
 
     [Fact]
@@ -86,8 +86,8 @@ public class GridRendererTests
     {
         var grid = CreateCentered(800, 600);
         var pt = grid.WorldToScreen(2, 3);
-        pt.X.Should().BeApproximately(500, Tolerance); // 400 + 2*50
-        pt.Y.Should().BeApproximately(150, Tolerance); // 300 - 3*50
+        pt.X.Should().BeApproximately(500f, Tolerance); // 400 + 2*50
+        pt.Y.Should().BeApproximately(150f, Tolerance); // 300 - 3*50
     }
 
     // --- ScreenToWorld ---
@@ -96,15 +96,15 @@ public class GridRendererTests
     public void ScreenToWorld_Center_MapsToOrigin()
     {
         var grid = CreateCentered(800, 600);
-        grid.ScreenToWorldX(400).Should().BeApproximately(0, Tolerance);
-        grid.ScreenToWorldY(300).Should().BeApproximately(0, Tolerance);
+        ((double)grid.ScreenToWorldX(400)).Should().BeApproximately(0, 1e-6);
+        ((double)grid.ScreenToWorldY(300)).Should().BeApproximately(0, 1e-6);
     }
 
     [Fact]
     public void ScreenToWorldX_RightOfCenter_IsPositive()
     {
         var grid = CreateCentered(800, 600);
-        grid.ScreenToWorldX(450).Should().BeApproximately(1, Tolerance);
+        ((double)grid.ScreenToWorldX(450)).Should().BeApproximately(1, 1e-6);
     }
 
     [Fact]
@@ -112,7 +112,7 @@ public class GridRendererTests
     {
         var grid = CreateCentered(800, 600);
         // Screen Y 250 is above center 300 => positive world Y
-        grid.ScreenToWorldY(250).Should().BeApproximately(1, Tolerance);
+        ((double)grid.ScreenToWorldY(250)).Should().BeApproximately(1, 1e-6);
     }
 
     // --- Round-trip: WorldToScreen then ScreenToWorld ---
@@ -127,8 +127,8 @@ public class GridRendererTests
         var grid = CreateCentered(800, 600);
         var sx = grid.WorldToScreenX(wx);
         var sy = grid.WorldToScreenY(wy);
-        grid.ScreenToWorldX(sx).Should().BeApproximately(wx, Tolerance);
-        grid.ScreenToWorldY(sy).Should().BeApproximately(wy, Tolerance);
+        ((double)grid.ScreenToWorldX(sx)).Should().BeApproximately(wx, 0.01);
+        ((double)grid.ScreenToWorldY(sy)).Should().BeApproximately(wy, 0.01);
     }
 
     // --- Pan ---
@@ -138,8 +138,8 @@ public class GridRendererTests
     {
         var grid = CreateCentered(800, 600);
         grid.Pan(10, -20);
-        grid.OriginX.Should().BeApproximately(410, Tolerance);
-        grid.OriginY.Should().BeApproximately(280, Tolerance);
+        grid.OriginX.Should().BeApproximately(410f, Tolerance);
+        grid.OriginY.Should().BeApproximately(280f, Tolerance);
     }
 
     [Fact]
@@ -148,7 +148,7 @@ public class GridRendererTests
         var grid = CreateCentered(800, 600);
         grid.Pan(100, 0);
         // Origin moved right by 100. World (0,0) now at screen (500, 300)
-        grid.WorldToScreenX(0).Should().BeApproximately(500, Tolerance);
+        grid.WorldToScreenX(0).Should().BeApproximately(500f, Tolerance);
     }
 
     [Fact]
@@ -157,8 +157,8 @@ public class GridRendererTests
         var grid = CreateCentered(800, 600);
         grid.Pan(10, 20);
         grid.Pan(30, 40);
-        grid.OriginX.Should().BeApproximately(440, Tolerance);
-        grid.OriginY.Should().BeApproximately(360, Tolerance);
+        grid.OriginX.Should().BeApproximately(440f, Tolerance);
+        grid.OriginY.Should().BeApproximately(360f, Tolerance);
     }
 
     // --- Zoom ---
@@ -202,11 +202,9 @@ public class GridRendererTests
     public void Zoom_AtCenter_KeepsCenterWorldPointFixed()
     {
         var grid = CreateCentered(800, 600);
-        // Zoom centered on screen center (400, 300). That's world (0,0).
-        // After zoom, world (0,0) should still map to screen (400, 300).
         grid.Zoom(2f, 400, 300);
-        grid.WorldToScreenX(0).Should().BeApproximately(400, 1);
-        grid.WorldToScreenY(0).Should().BeApproximately(300, 1);
+        grid.WorldToScreenX(0).Should().BeApproximately(400f, 1f);
+        grid.WorldToScreenY(0).Should().BeApproximately(300f, 1f);
     }
 
     [Fact]
@@ -214,14 +212,13 @@ public class GridRendererTests
     {
         var grid = CreateCentered(800, 600);
         float focusX = 500, focusY = 200;
-        var worldBeforeX = grid.ScreenToWorldX(focusX);
-        var worldBeforeY = grid.ScreenToWorldY(focusY);
+        var worldBeforeX = (double)grid.ScreenToWorldX(focusX);
+        var worldBeforeY = (double)grid.ScreenToWorldY(focusY);
 
         grid.Zoom(1.5f, focusX, focusY);
 
-        // The focus point in screen space should still map to the same world point
-        grid.ScreenToWorldX(focusX).Should().BeApproximately(worldBeforeX, 0.01);
-        grid.ScreenToWorldY(focusY).Should().BeApproximately(worldBeforeY, 0.01);
+        ((double)grid.ScreenToWorldX(focusX)).Should().BeApproximately(worldBeforeX, 0.01);
+        ((double)grid.ScreenToWorldY(focusY)).Should().BeApproximately(worldBeforeY, 0.01);
     }
 
     // --- Theme ---

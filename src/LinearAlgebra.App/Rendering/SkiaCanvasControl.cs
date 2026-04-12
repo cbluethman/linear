@@ -19,7 +19,6 @@ public class SkiaCanvasControl : SKElement
 
     public GridRenderer? Grid { get; private set; }
 
-    public event Action<double, double>? WorldClick;
     public event Action<double, double>? WorldMouseDown;
     public event Action<double, double>? WorldMouseMove;
     public event Action? WorldMouseUp;

@@ -35,8 +35,8 @@ public class GridRenderer
         _pixelsPerUnit *= factor;
         _pixelsPerUnit = Math.Clamp(_pixelsPerUnit, 10f, 200f);
 
-        _originX = focusX - worldX * _pixelsPerUnit;
-        _originY = focusY + worldY * _pixelsPerUnit;
+        _originX = focusX - (float)(worldX * _pixelsPerUnit);
+        _originY = focusY + (float)(worldY * _pixelsPerUnit);
     }
 
     public float WorldToScreenX(double worldX) => _originX + (float)(worldX * _pixelsPerUnit);
