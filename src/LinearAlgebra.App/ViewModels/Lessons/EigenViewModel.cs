@@ -21,6 +21,9 @@ public partial class EigenViewModel : LessonViewModelBase
     [ObservableProperty] private double _animationT;
     [ObservableProperty] private bool _showEigenvectors = true;
 
+    private int _quizEigenvectorsFound;
+    private int _quizEigenvectorsTotal;
+
     public override string Title => "Eigenvalues & Eigenvectors";
 
     public Mat2 Matrix => new(M11, M12, M21, M22);
@@ -162,11 +165,77 @@ public partial class EigenViewModel : LessonViewModelBase
         UpdateExplanation();
     }
 
+    public override void OnMouseDown(double worldX, double worldY)
+    {
+        if (!IsQuizMode) return;
+
+        // Find which sample vector (transformed) the user clicked near
+        var mat = _animator.Current;
+        var clickPos = new Vec2(worldX, worldY);
+        var sx = Grid.WorldToScreenX(worldX);
+        var sy = Grid.WorldToScreenY(worldY);
+
+        foreach (var v in _sampleVectors)
+        {
+            var transformed = mat.Transform(v);
+            if (Vectors.HitTestArrowHead(Grid, transformed, sx, sy, 20f))
+            {
+                var isEigen = IsAlongEigenvector(v, mat);
+                if (isEigen)
+                {
+                    _quizEigenvectorsFound++;
+                    Sound.PlayCorrect();
+                    QuizFeedback = $"Correct! Found {_quizEigenvectorsFound}/{_quizEigenvectorsTotal} eigenvector directions.";
+                    QuizCorrect++;
+
+                    if (_quizEigenvectorsFound >= _quizEigenvectorsTotal)
+                    {
+                        QuizFeedback = "All eigenvectors found!";
+                        QuizTotal++;
+                        QuizCorrect++;
+                        StartQuiz();
+                    }
+                }
+                else
+                {
+                    Sound.PlayWrong();
+                    QuizFeedback = "That vector changes direction — not an eigenvector.";
+                    QuizTotal++;
+                }
+                return;
+            }
+        }
+    }
+
     protected override void StartQuiz()
     {
-        var q = Quiz.GenerateEigenQuestion();
-        QuizPrompt = q.Prompt;
-        QuizFeedback = "";
         ShowEigenvectors = false;
+        _quizEigenvectorsFound = 0;
+
+        // Pick a matrix that has real eigenvectors
+        var matrices = new[]
+        {
+            (2.0, 1.0, 1.0, 2.0),  // Symmetric
+            (3.0, 0.0, 0.0, 1.0),  // Diagonal
+            (2.0, 1.0, 0.0, 3.0),  // Upper triangular
+            (1.0, 2.0, 0.0, -1.0), // Mixed
+        };
+        var r = new Random();
+        var (a, b, c, d) = matrices[r.Next(matrices.Length)];
+        SetMatrixFields(a, b, c, d);
+
+        // Count how many eigenvector directions exist among sample vectors
+        var mat = Matrix;
+        _quizEigenvectorsTotal = _sampleVectors.Count(v => IsAlongEigenvector(v, mat));
+        if (_quizEigenvectorsTotal == 0) _quizEigenvectorsTotal = 1; // Safety
+
+        QuizPrompt = $"Click on the gold-colored vectors — they are eigenvectors (only scale, don't rotate).";
+        QuizFeedback = "";
+    }
+
+    protected override void EndQuiz()
+    {
+        base.EndQuiz();
+        ShowEigenvectors = true;
     }
 }

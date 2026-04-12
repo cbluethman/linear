@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using LinearAlgebra.App.Models;
 using LinearAlgebra.App.Rendering;
 using LinearAlgebra.App.Services;
@@ -16,6 +17,8 @@ public partial class LinearCombinationViewModel : LessonViewModelBase
     [ObservableProperty] private double _scalar2 = 1.0;
 
     private bool _draggingV1, _draggingV2;
+    private Vec2? _quizTargetScalars;
+    private Vec2 _quizTargetVector;
 
     public override string Title => "Linear Combinations";
 
@@ -86,6 +89,12 @@ public partial class LinearCombinationViewModel : LessonViewModelBase
 
         // Draw result
         Vectors.DrawVector(canvas, Grid, result, ColorPalette.VectorResult, "result");
+
+        // Draw quiz target
+        if (IsQuizMode && _quizTargetScalars.HasValue)
+        {
+            Vectors.DrawVector(canvas, Grid, _quizTargetVector, ColorPalette.VectorEigen, "target", 3f, dashed: true);
+        }
     }
 
     public override void OnMouseDown(double worldX, double worldY)
@@ -112,10 +121,33 @@ public partial class LinearCombinationViewModel : LessonViewModelBase
         _draggingV1 = _draggingV2 = false;
     }
 
+    [RelayCommand]
+    private void SubmitQuizAnswer()
+    {
+        if (!IsQuizMode || !_quizTargetScalars.HasValue) return;
+
+        var target = _quizTargetScalars.Value;
+        var s1Match = Math.Abs(Scalar1 - target.X) < 0.3;
+        var s2Match = Math.Abs(Scalar2 - target.Y) < 0.3;
+        var correct = s1Match && s2Match;
+        RecordAnswer(correct);
+        if (correct) StartQuiz();
+    }
+
     protected override void StartQuiz()
     {
         var q = Quiz.GenerateLinearCombinationQuestion();
-        QuizPrompt = q.Prompt;
+        _quizTargetScalars = (Vec2)q.CorrectAnswer!;
+        _quizTargetVector = V1 * _quizTargetScalars.Value.X + V2 * _quizTargetScalars.Value.Y;
+        QuizPrompt = $"Use the sliders to find s1 and s2 so that s1*v1 + s2*v2 reaches the gold target vector.";
         QuizFeedback = "";
+        Scalar1 = 0;
+        Scalar2 = 0;
+    }
+
+    protected override void EndQuiz()
+    {
+        base.EndQuiz();
+        _quizTargetScalars = null;
     }
 }

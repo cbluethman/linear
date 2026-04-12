@@ -17,6 +17,12 @@ public partial class MatrixTransformViewModel : LessonViewModelBase
     [ObservableProperty] private double _m21 = 0;
     [ObservableProperty] private double _m22 = 1;
     [ObservableProperty] private double _rotationAngle;
+    [ObservableProperty] private string _selectedQuizAnswer = "";
+
+    private string _quizCorrectAnswer = "";
+    private string[]? _quizOptions;
+
+    public string[]? QuizOptions => _quizOptions;
 
     public override string Title => "Matrix Transformations";
 
@@ -113,10 +119,42 @@ public partial class MatrixTransformViewModel : LessonViewModelBase
 
     public override void OnTick() => _animator.Tick();
 
+    [RelayCommand]
+    private void SubmitQuizAnswer()
+    {
+        if (string.IsNullOrEmpty(SelectedQuizAnswer)) return;
+        var correct = SelectedQuizAnswer == _quizCorrectAnswer;
+        RecordAnswer(correct);
+        if (correct) StartQuiz();
+    }
+
     protected override void StartQuiz()
     {
         var q = Quiz.GenerateMatrixTransformQuestion();
+        _quizCorrectAnswer = (string)q.CorrectAnswer!;
+        _quizOptions = q.MultipleChoiceOptions;
+        OnPropertyChanged(nameof(QuizOptions));
         QuizPrompt = q.Prompt;
         QuizFeedback = "";
+        SelectedQuizAnswer = "";
+
+        // Apply the transformation so the student can see it
+        var presets = new Dictionary<string, Mat2>
+        {
+            ["90-degree rotation"] = Mat2.Rotation(Math.PI / 2),
+            ["Reflection over X-axis"] = Mat2.ReflectionX,
+            ["Reflection over Y-axis"] = Mat2.ReflectionY,
+            ["Scale by 2"] = Mat2.Scale(2),
+            ["Horizontal shear"] = Mat2.ShearX(1),
+        };
+        if (presets.TryGetValue(_quizCorrectAnswer, out var mat))
+            SetMatrixFields(mat);
+    }
+
+    protected override void EndQuiz()
+    {
+        base.EndQuiz();
+        _quizOptions = null;
+        OnPropertyChanged(nameof(QuizOptions));
     }
 }
