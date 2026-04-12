@@ -38,18 +38,18 @@ public class SoundService
             var streamInfo = Application.GetResourceStream(uri);
             if (streamInfo == null) return;
 
-            var reader = new WaveFileReader(streamInfo.Stream);
-            var volumeProvider = new VolumeWaveProvider16(new WaveChannel32(reader))
-            {
-                Volume = _volume
-            };
+            var stream = streamInfo.Stream;
+            var reader = new WaveFileReader(stream);
+            var channel = new WaveChannel32(reader) { Volume = _volume };
 
             var outputDevice = new WaveOutEvent();
-            outputDevice.Init(volumeProvider);
+            outputDevice.Init(channel);
             outputDevice.PlaybackStopped += (_, _) =>
             {
                 outputDevice.Dispose();
+                channel.Dispose();
                 reader.Dispose();
+                stream.Dispose();
             };
             outputDevice.Play();
         }

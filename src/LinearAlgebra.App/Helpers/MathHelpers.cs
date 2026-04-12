@@ -4,7 +4,6 @@ public static class MathHelpers
 {
     public static double DegreesToRadians(double degrees) => degrees * Math.PI / 180.0;
     public static double RadiansToDegrees(double radians) => radians * 180.0 / Math.PI;
-    public static double Clamp(double value, double min, double max) => Math.Max(min, Math.Min(max, value));
     public static double Lerp(double a, double b, double t) => a + (b - a) * t;
 
     /// <summary>

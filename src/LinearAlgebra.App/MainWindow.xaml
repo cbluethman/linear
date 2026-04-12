@@ -9,10 +9,6 @@
         Background="{StaticResource BgBrush}"
         WindowStartupLocation="CenterScreen">
 
-    <Window.Resources>
-        <converters:InverseBoolConverter x:Key="InverseBool" />
-    </Window.Resources>
-
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200" />

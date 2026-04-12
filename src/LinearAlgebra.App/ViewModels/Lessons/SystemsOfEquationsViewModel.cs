@@ -9,6 +9,8 @@ namespace LinearAlgebra.App.ViewModels.Lessons;
 
 public partial class SystemsOfEquationsViewModel : LessonViewModelBase
 {
+    private bool _suppressUpdate;
+
     [ObservableProperty] private double _a1 = 1;
     [ObservableProperty] private double _b1 = -1;
     [ObservableProperty] private double _c1 = 0;
@@ -58,6 +60,7 @@ public partial class SystemsOfEquationsViewModel : LessonViewModelBase
 
     private void UpdateExplanation()
     {
+        if (_suppressUpdate) return;
         var sol = Solution;
         var solText = sol.HasValue
             ? $"Solution: ({sol.Value.X:F2}, {sol.Value.Y:F2})"
@@ -71,8 +74,8 @@ public partial class SystemsOfEquationsViewModel : LessonViewModelBase
     public override void Render(SKCanvas canvas, SKSize size)
     {
         // Draw both lines
-        Shapes.DrawLine(canvas, Grid, A1, B1, C1, ColorPalette.VectorA, 3f);
-        Shapes.DrawLine(canvas, Grid, A2, B2, C2, ColorPalette.VectorB, 3f);
+        Shapes.DrawLine(canvas, Grid, size, A1, B1, C1, ColorPalette.VectorA, 3f);
+        Shapes.DrawLine(canvas, Grid, size, A2, B2, C2, ColorPalette.VectorB, 3f);
 
         // Draw line labels
         DrawLineLabel(canvas, A1, B1, C1, ColorPalette.VectorA, "L1", -50);
@@ -151,22 +154,31 @@ public partial class SystemsOfEquationsViewModel : LessonViewModelBase
     [RelayCommand]
     private void SetParallel()
     {
+        _suppressUpdate = true;
         A1 = 1; B1 = 1; C1 = 2;
-        A2 = 1; B2 = 1; C2 = 5;
+        A2 = 1; B2 = 1;
+        _suppressUpdate = false;
+        C2 = 5;
     }
 
     [RelayCommand]
     private void SetCoincident()
     {
+        _suppressUpdate = true;
         A1 = 1; B1 = 1; C1 = 2;
-        A2 = 2; B2 = 2; C2 = 4;
+        A2 = 2; B2 = 2;
+        _suppressUpdate = false;
+        C2 = 4;
     }
 
     [RelayCommand]
     private void SetIntersecting()
     {
+        _suppressUpdate = true;
         A1 = 1; B1 = -1; C1 = 0;
-        A2 = 1; B2 = 1; C2 = 4;
+        A2 = 1; B2 = 1;
+        _suppressUpdate = false;
+        C2 = 4;
     }
 
     [RelayCommand]

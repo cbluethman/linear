@@ -10,6 +10,7 @@ namespace LinearAlgebra.App.ViewModels.Lessons;
 public partial class MatrixTransformViewModel : LessonViewModelBase
 {
     private readonly TransformAnimator _animator = new();
+    private bool _suppressUpdate;
 
     [ObservableProperty] private double _m11 = 1;
     [ObservableProperty] private double _m12 = 0;
@@ -34,6 +35,7 @@ public partial class MatrixTransformViewModel : LessonViewModelBase
 
     private void ApplyManualMatrix()
     {
+        if (_suppressUpdate) return;
         var mat = new Mat2(M11, M12, M21, M22);
         _animator.AnimateTo(mat);
         Sound.PlayWhoosh();
@@ -82,8 +84,10 @@ public partial class MatrixTransformViewModel : LessonViewModelBase
 
     private void SetMatrixFields(Mat2 mat)
     {
-        M11 = mat.M11; M12 = mat.M12;
-        M21 = mat.M21; M22 = mat.M22;
+        _suppressUpdate = true;
+        M11 = mat.M11; M12 = mat.M12; M21 = mat.M21;
+        _suppressUpdate = false;
+        M22 = mat.M22; // Last setter triggers the single update
     }
 
     public override void Render(SKCanvas canvas, SKSize size)

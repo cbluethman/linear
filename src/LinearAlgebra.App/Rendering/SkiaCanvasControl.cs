@@ -11,12 +11,13 @@ public class SkiaCanvasControl : SKElement
 {
     private ISceneRenderer? _renderer;
     private bool _renderLoopActive;
+    private double _dpiScale = 1.0;
 
     // Mouse interaction state
     private bool _isPanning;
     private System.Windows.Point _lastMousePos;
 
-    public GridRenderer Grid { get; } = new();
+    public GridRenderer? Grid { get; private set; }
 
     public event Action<double, double>? WorldClick;
     public event Action<double, double>? WorldMouseDown;
@@ -33,6 +34,11 @@ public class SkiaCanvasControl : SKElement
         MouseWheel += OnMouseWheel;
     }
 
+    public void SetGrid(GridRenderer grid)
+    {
+        Grid = grid;
+    }
+
     public void SetRenderer(ISceneRenderer renderer)
     {
         _renderer = renderer;
@@ -40,13 +46,18 @@ public class SkiaCanvasControl : SKElement
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        Grid.SetCenter((float)ActualWidth, (float)ActualHeight);
+        // Detect DPI scale for correct coordinate mapping
+        var source = PresentationSource.FromVisual(this);
+        _dpiScale = source?.CompositionTarget?.TransformToDevice.M11 ?? 1.0;
+
+        Grid?.SetCenter((float)(ActualWidth * _dpiScale), (float)(ActualHeight * _dpiScale));
         StartRenderLoop();
     }
 
     private void OnUnloaded(object sender, RoutedEventArgs e)
     {
         _renderLoopActive = false;
+        CompositionTarget.Rendering -= OnCompositionTargetRendering;
     }
 
     private void StartRenderLoop()
@@ -65,6 +76,8 @@ public class SkiaCanvasControl : SKElement
     protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
     {
         base.OnPaintSurface(e);
+        if (Grid == null) return;
+
         var canvas = e.Surface.Canvas;
         var size = new SKSize(e.Info.Width, e.Info.Height);
 
@@ -74,7 +87,10 @@ public class SkiaCanvasControl : SKElement
 
     private void OnMouseDown(object sender, MouseButtonEventArgs e)
     {
+        if (Grid == null) return;
         var pos = e.GetPosition(this);
+        var sx = (float)(pos.X * _dpiScale);
+        var sy = (float)(pos.Y * _dpiScale);
 
         if (e.MiddleButton == MouseButtonState.Pressed)
         {
@@ -86,8 +102,8 @@ public class SkiaCanvasControl : SKElement
 
         if (e.LeftButton == MouseButtonState.Pressed)
         {
-            var worldX = Grid.ScreenToWorldX((float)pos.X);
-            var worldY = Grid.ScreenToWorldY((float)pos.Y);
+            var worldX = Grid.ScreenToWorldX(sx);
+            var worldY = Grid.ScreenToWorldY(sy);
             WorldMouseDown?.Invoke(worldX, worldY);
         }
     }
@@ -109,12 +125,13 @@ public class SkiaCanvasControl : SKElement
 
     private void OnMouseMove(object sender, MouseEventArgs e)
     {
+        if (Grid == null) return;
         var pos = e.GetPosition(this);
 
         if (_isPanning)
         {
-            var dx = (float)(pos.X - _lastMousePos.X);
-            var dy = (float)(pos.Y - _lastMousePos.Y);
+            var dx = (float)((pos.X - _lastMousePos.X) * _dpiScale);
+            var dy = (float)((pos.Y - _lastMousePos.Y) * _dpiScale);
             Grid.Pan(dx, dy);
             _lastMousePos = pos;
             return;
@@ -122,22 +139,25 @@ public class SkiaCanvasControl : SKElement
 
         if (e.LeftButton == MouseButtonState.Pressed)
         {
-            var worldX = Grid.ScreenToWorldX((float)pos.X);
-            var worldY = Grid.ScreenToWorldY((float)pos.Y);
+            var sx = (float)(pos.X * _dpiScale);
+            var sy = (float)(pos.Y * _dpiScale);
+            var worldX = Grid.ScreenToWorldX(sx);
+            var worldY = Grid.ScreenToWorldY(sy);
             WorldMouseMove?.Invoke(worldX, worldY);
         }
     }
 
     private void OnMouseWheel(object sender, MouseWheelEventArgs e)
     {
+        if (Grid == null) return;
         var pos = e.GetPosition(this);
         var factor = e.Delta > 0 ? 1.1f : 0.9f;
-        Grid.Zoom(factor, (float)pos.X, (float)pos.Y);
+        Grid.Zoom(factor, (float)(pos.X * _dpiScale), (float)(pos.Y * _dpiScale));
     }
 
     protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
     {
         base.OnRenderSizeChanged(sizeInfo);
-        Grid.SetCenter((float)ActualWidth, (float)ActualHeight);
+        Grid?.SetCenter((float)(ActualWidth * _dpiScale), (float)(ActualHeight * _dpiScale));
     }
 }

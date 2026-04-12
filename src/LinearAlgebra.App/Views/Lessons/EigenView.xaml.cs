@@ -14,20 +14,11 @@ public partial class EigenView : UserControl
     private EigenViewModel? VM => DataContext as EigenViewModel;
 
     private void OnSymmetric(object sender, RoutedEventArgs e)
-    {
-        if (VM == null) return;
-        VM.M11 = 2; VM.M12 = 1; VM.M21 = 1; VM.M22 = 2;
-    }
+        => VM?.SetMatrixFields(2, 1, 1, 2);
 
     private void OnRotation(object sender, RoutedEventArgs e)
-    {
-        if (VM == null) return;
-        VM.M11 = 0; VM.M12 = -1; VM.M21 = 1; VM.M22 = 0;
-    }
+        => VM?.SetMatrixFields(0, -1, 1, 0);
 
     private void OnDiagonal(object sender, RoutedEventArgs e)
-    {
-        if (VM == null) return;
-        VM.M11 = 3; VM.M12 = 0; VM.M21 = 0; VM.M22 = 1;
-    }
+        => VM?.SetMatrixFields(3, 0, 0, 1);
 }

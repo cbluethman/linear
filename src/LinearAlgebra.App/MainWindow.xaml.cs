@@ -33,7 +33,8 @@ public partial class MainWindow : Window
         // Animation tick
         CompositionTarget.Rendering += (_, _) => _viewModel.ActiveLesson?.OnTick();
 
-        // Share the grid instance
+        // Share the single GridRenderer instance with the canvas control
+        Canvas.SetGrid(_viewModel.Grid);
         _viewModel.Grid.SetTheme(_viewModel.IsDarkTheme);
 
         OnActiveLessonChanged();

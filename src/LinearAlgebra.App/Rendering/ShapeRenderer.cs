@@ -68,13 +68,13 @@ public class ShapeRenderer
         DrawPolygon(canvas, grid, vertices, fillColor, outlineColor);
     }
 
-    public void DrawLine(SKCanvas canvas, GridRenderer grid,
+    public void DrawLine(SKCanvas canvas, GridRenderer grid, SKSize canvasSize,
         double a, double b, double c, SKColor color, float strokeWidth = 2f)
     {
         // Line: ax + by = c
         // Find two points on the line within visible range
         var worldLeft = grid.ScreenToWorldX(0);
-        var worldRight = grid.ScreenToWorldX(1920); // Approximate max width
+        var worldRight = grid.ScreenToWorldX(canvasSize.Width);
 
         SKPoint p1, p2;
 

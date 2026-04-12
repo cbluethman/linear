@@ -12,6 +12,7 @@ public partial class EigenViewModel : LessonViewModelBase
     private readonly TransformAnimator _animator = new();
     private readonly List<Vec2> _sampleVectors = new();
     private const int NumSampleVectors = 24;
+    private bool _suppressUpdate;
 
     [ObservableProperty] private double _m11 = 2;
     [ObservableProperty] private double _m12 = 1;
@@ -48,6 +49,7 @@ public partial class EigenViewModel : LessonViewModelBase
 
     private void Animate()
     {
+        if (_suppressUpdate) return;
         _animator.AnimateTo(Matrix);
         Sound.PlayWhoosh();
     }
@@ -140,6 +142,14 @@ public partial class EigenViewModel : LessonViewModelBase
 
     private static bool IsParallel(Vec2 a, Vec2 b)
         => Math.Abs(Vec2.Cross(a, b)) < 0.15;
+
+    public void SetMatrixFields(double m11, double m12, double m21, double m22)
+    {
+        _suppressUpdate = true;
+        M11 = m11; M12 = m12; M21 = m21;
+        _suppressUpdate = false;
+        M22 = m22;
+    }
 
     public override void OnTick() => _animator.Tick();
 

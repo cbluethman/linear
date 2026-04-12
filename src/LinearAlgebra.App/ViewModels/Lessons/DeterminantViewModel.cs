@@ -10,6 +10,7 @@ namespace LinearAlgebra.App.ViewModels.Lessons;
 public partial class DeterminantViewModel : LessonViewModelBase
 {
     private readonly TransformAnimator _animator = new();
+    private bool _suppressUpdate;
 
     [ObservableProperty] private double _m11 = 2;
     [ObservableProperty] private double _m12 = 1;
@@ -34,6 +35,7 @@ public partial class DeterminantViewModel : LessonViewModelBase
 
     private void AnimateMatrix()
     {
+        if (_suppressUpdate) return;
         _animator.AnimateTo(new Mat2(M11, M12, M21, M22));
         Sound.PlayWhoosh();
     }
@@ -94,8 +96,9 @@ public partial class DeterminantViewModel : LessonViewModelBase
     {
         if (double.TryParse(QuizAnswer, out var answer))
         {
-            RecordAnswer(Quiz.ValidateNumericAnswer(answer, Determinant, 0.1));
-            if (QuizCorrect > QuizTotal - 1) StartQuiz(); // Next question on correct
+            var isCorrect = Quiz.ValidateNumericAnswer(answer, Determinant, 0.1);
+            RecordAnswer(isCorrect);
+            if (isCorrect) StartQuiz();
         }
     }
 
@@ -106,13 +109,11 @@ public partial class DeterminantViewModel : LessonViewModelBase
         QuizFeedback = "";
         QuizAnswer = "";
 
-        // Set the matrix to match the question
-        var det = (double)q.CorrectAnswer!;
-        // Generate a simple matrix with this determinant
-        var r = new Random();
-        M11 = r.Next(-3, 4);
-        M12 = r.Next(-3, 4);
-        M21 = r.Next(-3, 4);
-        M22 = (det + M12 * M21) / (Math.Abs(M11) < 0.01 ? 1 : M11);
+        // Use the exact matrix from the quiz question
+        var mat = (Mat2)q.CorrectAnswer!;
+        _suppressUpdate = true;
+        M11 = mat.M11; M12 = mat.M12; M21 = mat.M21;
+        _suppressUpdate = false;
+        M22 = mat.M22;
     }
 }

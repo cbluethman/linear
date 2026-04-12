@@ -96,7 +96,7 @@ public class QuizService
         return new QuizQuestion(
             $"What is the determinant of [{a} {b}; {c} {d}]?",
             QuizQuestionType.NumericInput,
-            mat.Determinant);
+            mat);
     }
 
     public QuizQuestion GenerateEigenQuestion()
