@@ -11,6 +11,7 @@ public partial class DeterminantViewModel : LessonViewModelBase
 {
     private readonly TransformAnimator _animator = new();
     private bool _suppressUpdate;
+    private double _quizExpectedDeterminant;
 
     [ObservableProperty] private double _m11 = 2;
     [ObservableProperty] private double _m12 = 1;
@@ -96,7 +97,7 @@ public partial class DeterminantViewModel : LessonViewModelBase
     {
         if (double.TryParse(QuizAnswer, out var answer))
         {
-            var isCorrect = Quiz.ValidateNumericAnswer(answer, Determinant, 0.1);
+            var isCorrect = Quiz.ValidateNumericAnswer(answer, _quizExpectedDeterminant, 0.1);
             RecordAnswer(isCorrect);
             if (isCorrect) StartQuiz();
         }
@@ -111,6 +112,7 @@ public partial class DeterminantViewModel : LessonViewModelBase
 
         // Use the exact matrix from the quiz question
         var mat = (Mat2)q.CorrectAnswer!;
+        _quizExpectedDeterminant = mat.Determinant;
         _suppressUpdate = true;
         M11 = mat.M11; M12 = mat.M12; M21 = mat.M21;
         _suppressUpdate = false;

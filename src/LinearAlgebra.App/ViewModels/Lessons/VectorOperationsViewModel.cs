@@ -102,7 +102,16 @@ public partial class VectorOperationsViewModel : LessonViewModelBase
     {
         var wasDragging = _draggingA || _draggingB || _draggingResult;
         _draggingA = _draggingB = _draggingResult = false;
-        if (wasDragging) Sound.PlaySnap();
+        if (wasDragging)
+        {
+            Sound.PlaySnap();
+            if (IsQuizMode && _quizTarget.HasValue)
+            {
+                var correct = Quiz.ValidateDragAnswer(Result, _quizTarget.Value);
+                RecordAnswer(correct);
+                if (correct) StartQuiz();
+            }
+        }
     }
 
     protected override void StartQuiz()
