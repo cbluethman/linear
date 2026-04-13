@@ -40,8 +40,19 @@ jobs:
           --self-contained true `
           -p:PublishSingleFile=true `
           -p:IncludeNativeLibrariesForSelfExtract=true `
+          -p:DebugType=None `
+          -p:DebugSymbols=false `
           -p:Version=${{ steps.version.outputs.VERSION }} `
           --output ./publish/portable
+
+    - name: Verify single exe
+      shell: pwsh
+      run: |
+        $files = Get-ChildItem ./publish/portable -File
+        Write-Host "Published files:"
+        $files | ForEach-Object { Write-Host "  $($_.Name) ($([math]::Round($_.Length/1MB, 2)) MB)" }
+        $exeCount = ($files | Where-Object { $_.Extension -eq '.exe' }).Count
+        if ($exeCount -ne 1) { Write-Warning "Expected 1 exe, found $exeCount" }
 
     # MSIX package
     - name: Publish MSIX
@@ -59,7 +70,7 @@ jobs:
     - name: Create portable zip
       shell: pwsh
       run: |
-        Compress-Archive -Path ./publish/portable/* -DestinationPath ./publish/LinearAlgebra-${{ steps.version.outputs.VERSION }}-win-x64.zip
+        Compress-Archive -Path ./publish/portable/LinearAlgebra.exe -DestinationPath ./publish/LinearAlgebra-${{ steps.version.outputs.VERSION }}-win-x64.zip
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
