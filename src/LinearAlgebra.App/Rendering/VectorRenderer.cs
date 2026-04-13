@@ -5,6 +5,7 @@ namespace LinearAlgebra.App.Rendering;
 
 public class VectorRenderer
 {
+    private static readonly SKTypeface ConsolasTypeface = SKTypeface.FromFamilyName("Consolas");
     private const float ArrowHeadLength = 12f;
     private const float ArrowHeadAngle = 25f * MathF.PI / 180f;
 
@@ -61,7 +62,7 @@ public class VectorRenderer
                 Color = color,
                 TextSize = 14,
                 IsAntialias = true,
-                Typeface = SKTypeface.FromFamilyName("Consolas"),
+                Typeface = ConsolasTypeface,
                 Style = SKPaintStyle.Fill
             };
 

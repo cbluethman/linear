@@ -149,9 +149,10 @@ public partial class EigenViewModel : LessonViewModelBase
     public void SetMatrixFields(double m11, double m12, double m21, double m22)
     {
         _suppressUpdate = true;
-        M11 = m11; M12 = m12; M21 = m21;
+        M11 = m11; M12 = m12; M21 = m21; M22 = m22;
         _suppressUpdate = false;
-        M22 = m22;
+        Animate();
+        UpdateExplanation();
     }
 
     public override void OnTick() => _animator.Tick();
@@ -171,7 +172,6 @@ public partial class EigenViewModel : LessonViewModelBase
 
         // Find which sample vector (transformed) the user clicked near
         var mat = _animator.Current;
-        var clickPos = new Vec2(worldX, worldY);
         var sx = Grid.WorldToScreenX(worldX);
         var sy = Grid.WorldToScreenY(worldY);
 
@@ -186,21 +186,18 @@ public partial class EigenViewModel : LessonViewModelBase
                     _quizEigenvectorsFound++;
                     Sound.PlayCorrect();
                     QuizFeedback = $"Correct! Found {_quizEigenvectorsFound}/{_quizEigenvectorsTotal} eigenvector directions.";
-                    QuizCorrect++;
 
                     if (_quizEigenvectorsFound >= _quizEigenvectorsTotal)
                     {
                         QuizFeedback = "All eigenvectors found!";
-                        QuizTotal++;
-                        QuizCorrect++;
+                        RecordAnswer(true);
                         StartQuiz();
                     }
                 }
                 else
                 {
-                    Sound.PlayWrong();
+                    RecordAnswer(false);
                     QuizFeedback = "That vector changes direction — not an eigenvector.";
-                    QuizTotal++;
                 }
                 return;
             }

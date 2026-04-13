@@ -23,7 +23,8 @@ public readonly record struct Vec2(double X, double Y)
     public static Vec2 operator -(Vec2 v) => new(-v.X, -v.Y);
     public static Vec2 operator *(Vec2 v, double s) => new(v.X * s, v.Y * s);
     public static Vec2 operator *(double s, Vec2 v) => new(v.X * s, v.Y * s);
-    public static Vec2 operator /(Vec2 v, double s) => new(v.X / s, v.Y / s);
+    public static Vec2 operator /(Vec2 v, double s) =>
+        Math.Abs(s) < 1e-15 ? Zero : new(v.X / s, v.Y / s);
 
     public static double Dot(Vec2 a, Vec2 b) => a.X * b.X + a.Y * b.Y;
     public static double Cross(Vec2 a, Vec2 b) => a.X * b.Y - a.Y * b.X;

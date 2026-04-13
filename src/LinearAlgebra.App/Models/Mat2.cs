@@ -96,6 +96,11 @@ public readonly record struct Mat2(double M11, double M12, double M21, double M2
         var c = M21;
         var d = M22 - lambda;
 
+        // All near-zero means every vector is an eigenvector (e.g. identity matrix)
+        // Return null to let caller handle the degenerate case
+        if (Math.Abs(a) < 1e-12 && Math.Abs(b) < 1e-12 && Math.Abs(c) < 1e-12 && Math.Abs(d) < 1e-12)
+            return null;
+
         if (Math.Abs(b) > 1e-12) return new Vec2(-b, a).Normalized;
         if (Math.Abs(d) > 1e-12) return new Vec2(d, -c).Normalized;
         if (Math.Abs(a) > 1e-12) return new Vec2(0, 1);

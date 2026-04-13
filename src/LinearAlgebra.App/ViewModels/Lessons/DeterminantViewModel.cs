@@ -9,6 +9,7 @@ namespace LinearAlgebra.App.ViewModels.Lessons;
 
 public partial class DeterminantViewModel : LessonViewModelBase
 {
+    private static readonly SKTypeface ConsolasTypeface = SKTypeface.FromFamilyName("Consolas");
     private readonly TransformAnimator _animator = new();
     private bool _suppressUpdate;
     private double _quizExpectedDeterminant;
@@ -79,7 +80,7 @@ public partial class DeterminantViewModel : LessonViewModelBase
             Color = ColorPalette.TextPrimary,
             TextSize = 18,
             IsAntialias = true,
-            Typeface = SKTypeface.FromFamilyName("Consolas"),
+            Typeface = ConsolasTypeface,
             TextAlign = SKTextAlign.Center
         };
         canvas.DrawText($"Area = {Math.Abs(det):F2}", screenCenter.X, screenCenter.Y, textPaint);
@@ -114,8 +115,9 @@ public partial class DeterminantViewModel : LessonViewModelBase
         var mat = (Mat2)q.CorrectAnswer!;
         _quizExpectedDeterminant = mat.Determinant;
         _suppressUpdate = true;
-        M11 = mat.M11; M12 = mat.M12; M21 = mat.M21;
+        M11 = mat.M11; M12 = mat.M12; M21 = mat.M21; M22 = mat.M22;
         _suppressUpdate = false;
-        M22 = mat.M22;
+        AnimateMatrix();
+        UpdateExplanation();
     }
 }

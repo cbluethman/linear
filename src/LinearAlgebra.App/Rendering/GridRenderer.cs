@@ -4,6 +4,7 @@ namespace LinearAlgebra.App.Rendering;
 
 public class GridRenderer
 {
+    private static readonly SKTypeface ConsolasTypeface = SKTypeface.FromFamilyName("Consolas");
     private float _pixelsPerUnit = 50f;
     private float _originX;
     private float _originY;
@@ -76,7 +77,7 @@ public class GridRenderer
             Color = labelColor,
             TextSize = 12,
             IsAntialias = true,
-            Typeface = SKTypeface.FromFamilyName("Consolas")
+            Typeface = ConsolasTypeface
         };
 
         // Determine visible range in world coordinates

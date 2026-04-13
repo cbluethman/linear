@@ -8,10 +8,12 @@ namespace LinearAlgebra.App;
 public partial class MainWindow : Window
 {
     private MainViewModel _viewModel = null!;
+    private EventHandler? _renderingHandler;
 
     public MainWindow()
     {
         InitializeComponent();
+        Closed += OnWindowClosed;
     }
 
     public void Initialize(MainViewModel viewModel)
@@ -30,14 +32,21 @@ public partial class MainWindow : Window
         Canvas.WorldMouseMove += (x, y) => _viewModel.ActiveLesson?.OnMouseMove(x, y);
         Canvas.WorldMouseUp += () => _viewModel.ActiveLesson?.OnMouseUp();
 
-        // Animation tick
-        CompositionTarget.Rendering += (_, _) => _viewModel.ActiveLesson?.OnTick();
+        // Animation tick — store handler for cleanup
+        _renderingHandler = (_, _) => _viewModel.ActiveLesson?.OnTick();
+        CompositionTarget.Rendering += _renderingHandler;
 
         // Share the single GridRenderer instance with the canvas control
         Canvas.SetGrid(_viewModel.Grid);
         _viewModel.Grid.SetTheme(_viewModel.IsDarkTheme);
 
         OnActiveLessonChanged();
+    }
+
+    private void OnWindowClosed(object? sender, EventArgs e)
+    {
+        if (_renderingHandler != null)
+            CompositionTarget.Rendering -= _renderingHandler;
     }
 
     private void OnActiveLessonChanged()

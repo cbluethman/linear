@@ -1,3 +1,4 @@
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LinearAlgebra.App.Models;
@@ -68,16 +69,16 @@ public partial class MatrixTransformViewModel : LessonViewModelBase
     private void ApplyScale(string param)
     {
         var parts = param.Split(',');
-        var sx = double.Parse(parts[0]);
-        var sy = double.Parse(parts[1]);
+        var sx = double.Parse(parts[0], CultureInfo.InvariantCulture);
+        var sy = double.Parse(parts[1], CultureInfo.InvariantCulture);
         SetMatrixFields(Mat2.Scale(sx, sy));
     }
 
     [RelayCommand]
-    private void ApplyShearX(double k) => SetMatrixFields(Mat2.ShearX(k));
+    private void ApplyShearX(string param) => SetMatrixFields(Mat2.ShearX(double.Parse(param, CultureInfo.InvariantCulture)));
 
     [RelayCommand]
-    private void ApplyShearY(double k) => SetMatrixFields(Mat2.ShearY(k));
+    private void ApplyShearY(string param) => SetMatrixFields(Mat2.ShearY(double.Parse(param, CultureInfo.InvariantCulture)));
 
     [RelayCommand]
     private void ApplyReflectX() => SetMatrixFields(Mat2.ReflectionX);
@@ -91,9 +92,9 @@ public partial class MatrixTransformViewModel : LessonViewModelBase
     private void SetMatrixFields(Mat2 mat)
     {
         _suppressUpdate = true;
-        M11 = mat.M11; M12 = mat.M12; M21 = mat.M21;
+        M11 = mat.M11; M12 = mat.M12; M21 = mat.M21; M22 = mat.M22;
         _suppressUpdate = false;
-        M22 = mat.M22; // Last setter triggers the single update
+        ApplyManualMatrix();
     }
 
     public override void Render(SKCanvas canvas, SKSize size)

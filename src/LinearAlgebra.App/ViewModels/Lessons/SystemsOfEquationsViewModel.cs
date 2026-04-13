@@ -9,6 +9,8 @@ namespace LinearAlgebra.App.ViewModels.Lessons;
 
 public partial class SystemsOfEquationsViewModel : LessonViewModelBase
 {
+    private static readonly SKTypeface ConsolasTypeface = SKTypeface.FromFamilyName("Consolas");
+    private static readonly SKTypeface ConsolasBoldTypeface = SKTypeface.FromFamilyName("Consolas", SKFontStyle.Bold);
     private bool _suppressUpdate;
 
     [ObservableProperty] private double _a1 = 1;
@@ -61,14 +63,23 @@ public partial class SystemsOfEquationsViewModel : LessonViewModelBase
     private void UpdateExplanation()
     {
         if (_suppressUpdate) return;
+
+        var equationText = $"Equation 1: {A1:F1}x + {B1:F1}y = {C1:F1}\n" +
+                          $"Equation 2: {A2:F1}x + {B2:F1}y = {C2:F1}";
+
+        if (IsQuizMode)
+        {
+            // Don't reveal the answer during quiz mode
+            ExplanationText = equationText;
+            return;
+        }
+
         var sol = Solution;
         var solText = sol.HasValue
             ? $"Solution: ({sol.Value.X:F2}, {sol.Value.Y:F2})"
             : SolutionType;
 
-        ExplanationText = $"Equation 1: {A1:F1}x + {B1:F1}y = {C1:F1}\n" +
-                         $"Equation 2: {A2:F1}x + {B2:F1}y = {C2:F1}\n" +
-                         $"{SolutionType}. {solText}";
+        ExplanationText = $"{equationText}\n{SolutionType}. {solText}";
     }
 
     public override void Render(SKCanvas canvas, SKSize size)
@@ -100,7 +111,7 @@ public partial class SystemsOfEquationsViewModel : LessonViewModelBase
                 Color = ColorPalette.TextPrimary,
                 TextSize = 14,
                 IsAntialias = true,
-                Typeface = SKTypeface.FromFamilyName("Consolas")
+                Typeface = ConsolasTypeface
             };
             canvas.DrawText($"({sol.Value.X:F1}, {sol.Value.Y:F1})",
                 screenPt.X + 12, screenPt.Y - 8, labelPaint);
@@ -113,7 +124,7 @@ public partial class SystemsOfEquationsViewModel : LessonViewModelBase
                 Color = ColorPalette.Wrong,
                 TextSize = 20,
                 IsAntialias = true,
-                Typeface = SKTypeface.FromFamilyName("Consolas"),
+                Typeface = ConsolasTypeface,
                 TextAlign = SKTextAlign.Center
             };
             canvas.DrawText("Parallel - No Solution", size.Width / 2, 40, textPaint);
@@ -125,7 +136,7 @@ public partial class SystemsOfEquationsViewModel : LessonViewModelBase
                 Color = ColorPalette.Correct,
                 TextSize = 20,
                 IsAntialias = true,
-                Typeface = SKTypeface.FromFamilyName("Consolas"),
+                Typeface = ConsolasTypeface,
                 TextAlign = SKTextAlign.Center
             };
             canvas.DrawText("Coincident - Infinite Solutions", size.Width / 2, 40, textPaint);
@@ -146,7 +157,7 @@ public partial class SystemsOfEquationsViewModel : LessonViewModelBase
             Color = color,
             TextSize = 16,
             IsAntialias = true,
-            Typeface = SKTypeface.FromFamilyName("Consolas", SKFontStyle.Bold)
+            Typeface = ConsolasBoldTypeface
         };
         canvas.DrawText(label, screenPt.X + offsetX, screenPt.Y - 10, paint);
     }
@@ -156,9 +167,9 @@ public partial class SystemsOfEquationsViewModel : LessonViewModelBase
     {
         _suppressUpdate = true;
         A1 = 1; B1 = 1; C1 = 2;
-        A2 = 1; B2 = 1;
+        A2 = 1; B2 = 1; C2 = 5;
         _suppressUpdate = false;
-        C2 = 5;
+        UpdateExplanation();
     }
 
     [RelayCommand]
@@ -166,9 +177,9 @@ public partial class SystemsOfEquationsViewModel : LessonViewModelBase
     {
         _suppressUpdate = true;
         A1 = 1; B1 = 1; C1 = 2;
-        A2 = 2; B2 = 2;
+        A2 = 2; B2 = 2; C2 = 4;
         _suppressUpdate = false;
-        C2 = 4;
+        UpdateExplanation();
     }
 
     [RelayCommand]
@@ -176,9 +187,9 @@ public partial class SystemsOfEquationsViewModel : LessonViewModelBase
     {
         _suppressUpdate = true;
         A1 = 1; B1 = -1; C1 = 0;
-        A2 = 1; B2 = 1;
+        A2 = 1; B2 = 1; C2 = 4;
         _suppressUpdate = false;
-        C2 = 4;
+        UpdateExplanation();
     }
 
     [RelayCommand]

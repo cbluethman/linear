@@ -24,7 +24,7 @@ public record QuizResult(int Correct, int Total)
 
 public class QuizService
 {
-    private readonly Random _random = new();
+    private readonly Random _random = Random.Shared;
 
     public QuizQuestion GenerateVectorBasicsQuestion()
     {

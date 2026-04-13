@@ -33,10 +33,10 @@ public partial class LinearCombinationViewModel : LessonViewModelBase
         UpdateExplanation();
     }
 
-    partial void OnV1XChanged(double value) => UpdateExplanation();
-    partial void OnV1YChanged(double value) => UpdateExplanation();
-    partial void OnV2XChanged(double value) => UpdateExplanation();
-    partial void OnV2YChanged(double value) => UpdateExplanation();
+    partial void OnV1XChanged(double value) { UpdateExplanation(); RecomputeQuizTarget(); }
+    partial void OnV1YChanged(double value) { UpdateExplanation(); RecomputeQuizTarget(); }
+    partial void OnV2XChanged(double value) { UpdateExplanation(); RecomputeQuizTarget(); }
+    partial void OnV2YChanged(double value) { UpdateExplanation(); RecomputeQuizTarget(); }
     partial void OnScalar1Changed(double value) => UpdateExplanation();
     partial void OnScalar2Changed(double value) => UpdateExplanation();
 
@@ -143,6 +143,13 @@ public partial class LinearCombinationViewModel : LessonViewModelBase
         QuizFeedback = "";
         Scalar1 = 0;
         Scalar2 = 0;
+    }
+
+    private void RecomputeQuizTarget()
+    {
+        if (!IsQuizMode || !_quizTargetScalars.HasValue) return;
+        // Recompute target vector position when basis vectors change
+        _quizTargetVector = V1 * _quizTargetScalars.Value.X + V2 * _quizTargetScalars.Value.Y;
     }
 
     protected override void EndQuiz()

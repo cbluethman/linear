@@ -121,6 +121,22 @@ public partial class VectorOperationsViewModel : LessonViewModelBase
         QuizPrompt = q.Prompt;
         QuizFeedback = "";
         OperationIndex = 0;
+
+        // Set vectors A and B to match the generated question
+        // Extract operands from the quiz target: quiz generates a+b, and we know
+        // the question format uses the vectors that produce this result
+        // We need the original vectors from QuizService, so parse from prompt
+        // Format: "What is (ax, ay) + (bx, by)? Drag the result vector."
+        var prompt = q.Prompt;
+        var match = System.Text.RegularExpressions.Regex.Match(prompt,
+            @"\((-?\d+),\s*(-?\d+)\)\s*\+\s*\((-?\d+),\s*(-?\d+)\)");
+        if (match.Success)
+        {
+            AX = double.Parse(match.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture);
+            AY = double.Parse(match.Groups[2].Value, System.Globalization.CultureInfo.InvariantCulture);
+            BX = double.Parse(match.Groups[3].Value, System.Globalization.CultureInfo.InvariantCulture);
+            BY = double.Parse(match.Groups[4].Value, System.Globalization.CultureInfo.InvariantCulture);
+        }
     }
 
     protected override void EndQuiz()
